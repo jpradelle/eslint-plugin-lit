@@ -10,8 +10,8 @@ for more details.
 
 ## Rule Details
 
-This rule enforces to put `accessor` keyword on class properties when needed.
-It also provides autofix to add `accessor` keyword and can be used to migrate
+This rule enforces adding an `accessor` keyword to class properties when needed.
+It also provides an autofix to add the `accessor` keyword and can be used to migrate
 a project to lit 3 and standard decorators.
 
 The following patterns are considered as errors:

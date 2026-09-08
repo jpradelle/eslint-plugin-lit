@@ -24,7 +24,7 @@ export const rule: Rule.RuleModule = {
   meta: {
     docs: {
       description:
-        'Enforces accessor keyword on lit decorated class properties',
+        'Enforces the `accessor` keyword on lit decorated class properties',
       recommended: false,
       url: 'https://github.com/43081j/eslint-plugin-lit/blob/master/docs/rules/missing-accessor-keyword.md'
     },
