@@ -83,21 +83,36 @@ ruleTester.run('require-localized-annotation', rule, {
         parser,
         parserOptions
       }
-    }
-  ],
-
-  invalid: [
+    },
     {
-      // Class with msg() but no @localized() - error on class definition
+      // Class with msg() but no @localized() - not a Lit element
       code: `import {msg} from '@lit/localize';
       class MyElement {
         render() {
           return msg('Hello');
         }
       }`,
+      languageOptions: {
+        parser,
+        parserOptions
+      }
+    }
+  ],
+
+  invalid: [
+    {
+      // Class with msg() but no @localized() - is a Lit element
+      code: `import {msg} from '@lit/localize';
+      import {LitElement} from 'lit';
+      class MyElement extends LitElement {
+        render() {
+          return msg('Hello');
+        }
+      }`,
       output: `import {msg, localized} from '@lit/localize';
+      import {LitElement} from 'lit';
       @localized()
-      class MyElement {
+      class MyElement extends LitElement {
         render() {
           return msg('Hello');
         }
@@ -108,17 +123,16 @@ ruleTester.run('require-localized-annotation', rule, {
       },
       errors: [
         {
-          messageId: 'missingLocalized',
-          line: 2,
-          column: 13
+          messageId: 'missingLocalized'
         }
       ]
     },
     {
       // Class with msg() in nested call but no @localized() - error on class definition
       code: `import {msg} from '@lit/localize';
+      import {LitElement} from 'lit';
       @foo()
-      class MyElement {
+      class MyElement extends LitElement {
         render() {
           const x = msg('Hello');
           const y = msg('Hello');
@@ -126,13 +140,43 @@ ruleTester.run('require-localized-annotation', rule, {
         }
       }`,
       output: `import {msg, localized} from '@lit/localize';
+      import {LitElement} from 'lit';
       @localized()
       @foo()
-      class MyElement {
+      class MyElement extends LitElement {
         render() {
           const x = msg('Hello');
           const y = msg('Hello');
           return x + y;
+        }
+      }`,
+      languageOptions: {
+        parser,
+        parserOptions
+      },
+      errors: [
+        {
+          messageId: 'missingLocalized',
+          line: 4,
+          column: 13
+        }
+      ]
+    },
+    {
+      // Aliased msg import, no decorator
+      code: `import {msg as message} from '@lit/localize';
+      import {LitElement} from 'lit';
+      class MyElement extends LitElement {
+        render() {
+          return message('Hello');
+        }
+      }`,
+      output: `import {msg as message, localized} from '@lit/localize';
+      import {LitElement} from 'lit';
+      @localized()
+      class MyElement extends LitElement {
+        render() {
+          return message('Hello');
         }
       }`,
       languageOptions: {
@@ -148,43 +192,18 @@ ruleTester.run('require-localized-annotation', rule, {
       ]
     },
     {
-      // Aliased msg import, no decorator
-      code: `import {msg as message} from '@lit/localize';
-      class MyElement {
-        render() {
-          return message('Hello');
-        }
-      }`,
-      output: `import {msg as message, localized} from '@lit/localize';
-      @localized()
-      class MyElement {
-        render() {
-          return message('Hello');
-        }
-      }`,
-      languageOptions: {
-        parser,
-        parserOptions
-      },
-      errors: [
-        {
-          messageId: 'missingLocalized',
-          line: 2,
-          column: 13
-        }
-      ]
-    },
-    {
       // localized imported but not used as decorator
       code: `import {msg, localized} from '@lit/localize';
-      export default class MyElement {
+      import {LitElement} from 'lit';
+      export default class MyElement extends LitElement {
         render() {
           return msg('Hello');
         }
       }`,
       output: `import {msg, localized} from '@lit/localize';
+      import {LitElement} from 'lit';
       @localized()
-      export default class MyElement {
+      export default class MyElement extends LitElement {
         render() {
           return msg('Hello');
         }
@@ -196,7 +215,7 @@ ruleTester.run('require-localized-annotation', rule, {
       errors: [
         {
           messageId: 'missingLocalized',
-          line: 2,
+          line: 3,
           column: 28
         }
       ]
@@ -204,13 +223,15 @@ ruleTester.run('require-localized-annotation', rule, {
     {
       // Class expression
       code: `import {msg} from '@lit/localize';
-      const MyElement = class {
+      import {LitElement} from 'lit';
+      const MyElement = class extends LitElement {
         render() {
           return msg('Hello');
         }
       }`,
       output: `import {msg, localized} from '@lit/localize';
-      const MyElement = @localized() class {
+      import {LitElement} from 'lit';
+      const MyElement = @localized() class extends LitElement {
         render() {
           return msg('Hello');
         }
@@ -222,7 +243,7 @@ ruleTester.run('require-localized-annotation', rule, {
       errors: [
         {
           messageId: 'missingLocalized',
-          line: 2,
+          line: 3,
           column: 25
         }
       ]

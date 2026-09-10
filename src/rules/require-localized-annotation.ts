@@ -5,7 +5,7 @@
 
 import {Rule} from 'eslint';
 import * as ESTree from 'estree';
-import {findVariableInScope} from '../util.js';
+import {findVariableInScope, isLitClass} from '../util.js';
 
 //------------------------------------------------------------------------------
 // Rule Definition
@@ -124,7 +124,8 @@ export const rule: Rule.RuleModule = {
             if (
               enclosingClass &&
               !reportedClasses.has(enclosingClass) &&
-              !classHasLocalizedDecorator(enclosingClass)
+              !classHasLocalizedDecorator(enclosingClass) &&
+              isLitClass(enclosingClass, context)
             ) {
               reportedClasses.add(enclosingClass);
               const reportNode =

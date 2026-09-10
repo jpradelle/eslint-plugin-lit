@@ -1,13 +1,13 @@
 # Requires @localized() annotation on classes using msg() from @lit/localize (require-localized-annotation)
 
 When using `@lit/localize`, the `msg` function can be used to translate strings.
-Classes that use `msg()` should be decorated with `@localized()` to ensure
-they re-render when the locale changes.
+LitElement classes that use `msg()` should be decorated with `@localized()` to
+ensure they re-render when the locale changes.
 
 ## Rule Details
 
-This rule ensures that all classes containing calls to `msg()` imported from
-`@lit/localize` have the `@localized()` decorator applied.
+This rule ensures that all LitElement classes containing calls to `msg()`
+imported from `@lit/localize` have the `@localized()` decorator applied.
 
 Examples of **incorrect** code for this rule:
 
